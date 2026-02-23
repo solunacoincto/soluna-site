@@ -70,11 +70,11 @@ export async function GET() {
     console.log('tvlComponent (5x):', tvlComponent);
 
     // suma komponentów mnożona x10 przed dodaniem bazowego 50
-    const componentSum = (priceChange7dComponent + h6ChangeComponent + volumeComponent + tvlComponent) * 10;
+    const componentSum = (priceChange7dComponent + h6ChangeComponent + volumeComponent + tvlComponent) * 5;
 
     const belief = 50 + componentSum;
 
-    const finalBeliefRaw = Math.max(0, Math.min(100, belief));
+    const finalBeliefRaw = parseFloat(Math.max(0, Math.min(100, belief)).toFixed(1));
 
     // Redis smoothing
     const dailyHistoryKey = 'belief:dailyHistory';
@@ -90,7 +90,7 @@ export async function GET() {
       console.error('Error fetching belief history from Redis:', err);
     }
 
-    const finalBelief = 0.5 * yesterdayBelief + 0.5 * finalBeliefRaw;
+    const finalBelief = parseFloat((0.5 * yesterdayBelief + 0.5 * finalBeliefRaw).toFixed(1));
 
     // zapis do Redis
     try {

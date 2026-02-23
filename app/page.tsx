@@ -10,7 +10,7 @@ export default async function Home() {
   const protocol =
     process.env.NODE_ENV === "development" ? "http" : "https";
 
-  const res = await fetch(`${protocol}://${host}/api/belief`, {
+  const res = await fetch(`${protocol}://${host}/api/update-belief-v2`, {
     cache: "no-store",
   });
 
@@ -25,7 +25,7 @@ export default async function Home() {
     "Waning": "bg-slate-400/10",
   };
 
-  const auraClass = auraMap[beliefData.phase] || "bg-white/5";
+  const auraClass = auraMap[beliefData.result.phase] || "bg-white/5";
 
   return (
     <main className="relative bg-black text-white min-h-[90vh] px-6 py-10 overflow-hidden">
@@ -50,11 +50,11 @@ export default async function Home() {
             </p>
 
             <p className="text-3xl font-semibold text-white tracking-[-0.01em]">
-              {beliefData.phase}
+              {beliefData.result.phase}
             </p>
 
             <p className="text-white/40 text-sm tracking-wide">
-              Belief {beliefData.belief} · {beliefData.state}
+              Belief {beliefData.result.belief} · {beliefData.result.state}
             </p>
           </div>
         </section>

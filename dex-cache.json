@@ -1,0 +1,75 @@
+[
+  {
+    "chainId": "solana",
+    "dexId": "pumpswap",
+    "url": "https://dexscreener.com/solana/ffcygssgwhfora9rxxka48p8yfoz8tsw85jpo3cqhdys",
+    "pairAddress": "FFcYgSSgWHforA9rXXkA48p8YFoz8TSW85Jpo3CQHDyS",
+    "baseToken": {
+      "address": "Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump",
+      "name": "Buttcoin",
+      "symbol": "Buttcoin"
+    },
+    "quoteToken": {
+      "address": "So11111111111111111111111111111111111111112",
+      "name": "Wrapped SOL",
+      "symbol": "SOL"
+    },
+    "priceNative": "0.0001723",
+    "priceUsd": "0.01360",
+    "txns": {
+      "m5": {
+        "buys": 42,
+        "sells": 5
+      },
+      "h1": {
+        "buys": 346,
+        "sells": 121
+      },
+      "h6": {
+        "buys": 1141,
+        "sells": 1229
+      },
+      "h24": {
+        "buys": 2979,
+        "sells": 3076
+      }
+    },
+    "volume": {
+      "h24": 1260490.55,
+      "h6": 472709.39,
+      "h1": 83185.45,
+      "m5": 10585.18
+    },
+    "priceChange": {
+      "m5": -3.6,
+      "h1": -11.6,
+      "h6": 7.39,
+      "h24": 9.52
+    },
+    "liquidity": {
+      "usd": 545410.03,
+      "base": 20019759,
+      "quote": 3460.196
+    },
+    "fdv": 13601224,
+    "marketCap": 13601224,
+    "pairCreatedAt": 1767965767000,
+    "info": {
+      "imageUrl": "https://cdn.dexscreener.com/cms/images/baf3d4bdaac47ef59f32c8ddc11f83e995f351be1eef6d4d192d72ff8def0020?width=800&height=800&quality=90",
+      "header": "https://cdn.dexscreener.com/cms/images/f9224b6d1b8b6d10309317150d8f8900042983d51d61b4eb54a31984b2cfbf8e?width=1500&height=500&quality=90",
+      "openGraph": "https://cdn.dexscreener.com/token-images/og/solana/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump?timestamp=1771863300000",
+      "websites": [
+        {
+          "url": "https://www.buttcoinfoundation.org/",
+          "label": "Website"
+        }
+      ],
+      "socials": [
+        {
+          "url": "https://x.com/buttcoin",
+          "type": "twitter"
+        }
+      ]
+    }
+  }
+]

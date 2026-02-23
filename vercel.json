@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/update-belief",
+      "schedule": "0 */12 * * *"
+    }
+  ]
+}

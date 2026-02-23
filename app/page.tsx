@@ -1,5 +1,5 @@
 export default async function Home() {
-  const res = await fetch("http://localhost:3000/api/belief", {
+  const res = await fetch("/api/belief", {
     cache: "no-store",
   });
 

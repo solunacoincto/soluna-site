@@ -1,27 +1,15 @@
 import { NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
-
-const redis = Redis.fromEnv();
 
 export async function GET() {
   try {
-    const CACHE_KEY = "soluna:belief";
-    const TWELVE_HOURS = 60 * 60 * 12;
-
-    // 1️⃣ Check cache first
-    const cached = await redis.get(CACHE_KEY);
-
-    if (cached) {
-      return NextResponse.json(cached);
-    }
-
-    // 2️⃣ Fetch fresh data if no cache
+    // Fetch fresh data from CoinGecko
     const res = await fetch(
       "https://api.coingecko.com/api/v3/coins/solana?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false"
     );
 
     const data = await res.json();
-    const change7d = data.market_data.price_change_percentage_7d;
+    const change7d =
+      data.market_data.price_change_percentage_7d_in_currency?.usd ?? 0;
 
     let belief = 50 + change7d * 1.5;
     belief = Math.max(0, Math.min(100, belief));
@@ -52,9 +40,6 @@ export async function GET() {
       state,
       updatedAt: Date.now(),
     };
-
-    // 3️⃣ Store in Redis for 12 hours
-    await redis.set(CACHE_KEY, result, { ex: TWELVE_HOURS });
 
     return NextResponse.json(result);
   } catch (error) {

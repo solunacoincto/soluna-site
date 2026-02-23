@@ -1,39 +1,75 @@
-export default function Home() {
+export default async function Home() {
+  const res = await fetch("http://localhost:3000/api/belief", {
+    cache: "no-store",
+  });
+
+  const beliefData = await res.json();
+
+  const auraMap: Record<string, string> = {
+    "New Moon": "bg-blue-500/10",
+    "Accumulation": "bg-blue-500/10",
+    "Expansion": "bg-emerald-500/10",
+    "Mania": "bg-amber-500/10",
+    "Capitulation": "bg-red-500/10",
+    "Waning": "bg-slate-400/10",
+  };
+
+  const auraClass = auraMap[beliefData.phase] || "bg-white/5";
+
   return (
-    <main className="relative bg-black text-white min-h-screen px-6 py-16 overflow-hidden">
-      <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="relative bg-black text-white min-h-[90vh] px-6 py-10 overflow-hidden">
+      <div className={`absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] ${auraClass} rounded-full blur-3xl pointer-events-none transition-colors duration-700`} />
 
       <div className="max-w-2xl mx-auto">
 
         {/* HERO */}
-        <section className="mb-20">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-semibold mb-8 tracking-[-0.02em]">
+        <section className="mb-10">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-semibold mb-6 tracking-[-0.03em]">
             $SOLUNA
           </h1>
 
-          <p className="text-xl text-white/50 mt-2">
+          <p className="text-lg text-white/40 mt-2 tracking-wide">
             The cultural reflection of Solana.
           </p>
+
+          {/* CURRENT PHASE */}
+          <div className="mt-12 space-y-2">
+            <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
+              Current Phase
+            </p>
+
+            <p className="text-3xl font-semibold text-white tracking-[-0.01em]">
+              {beliefData.phase}
+            </p>
+
+            <p className="text-white/40 text-sm tracking-wide">
+              Belief {beliefData.belief} · {beliefData.state}
+            </p>
+          </div>
         </section>
 
         {/* REFLECTION */}
-        <section className="mb-20 space-y-6 text-[20px] leading-[1.7] text-white/70">
+        <section className="mb-12 space-y-6 text-[19px] leading-[1.75] text-white/70">
+          <p>
+            This is the current reflection of Solana.
+          </p>
+
           <p>
             Solana is speed. Solana is chaos. Solana is trenches.
           </p>
 
           <p>
-            It expands. It crashes. It survives.
+            It expands. It contracts. It survives.
           </p>
 
           <p>
-            Every ecosystem eventually creates its own reflection.
+            Every ecosystem eventually reveals its own emotional cycle.
           </p>
         </section>
 
         {/* PHASES */}
-        <section className="mb-20 space-y-6 text-[20px] leading-[1.7] text-white/70">
-          <h2 className="text-3xl font-semibold text-white mb-4">
+        <section className="mb-8 space-y-5 text-[20px] leading-[1.7] text-white/60">
+          <h2 className="text-3xl font-semibold text-white mb-4 tracking-[-0.01em]">
             Phases
           </h2>
 
@@ -54,10 +90,10 @@ export default function Home() {
           </p>
         </section>
 
-        <section className="mt-24">
+        <section className="mt-6">
           <a
             href="/chronicle"
-            className="text-xl text-white/70 hover:text-white transition tracking-wide"
+            className="text-lg text-white/60 hover:text-white transition tracking-wide"
           >
             Enter the Chronicle →
           </a>

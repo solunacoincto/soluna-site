@@ -1,3 +1,4 @@
+// app/api/update-belief/route.ts
 import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 
@@ -8,26 +9,34 @@ const redis = new Redis({
 
 export async function GET() {
   try {
-    // Na razie testowy belief
     const belief = 50;
 
-    const result = {
-      belief,
-      phase: "Test Phase",
-      state: "Initialization",
-      updatedAt: Date.now(),
-    };
+    let phase = "";
+    let state = "";
 
+    if (belief <= 25) {
+      phase = "New Moon";
+      state = "Disorientation";
+    } else if (belief <= 45) {
+      phase = "Waning";
+      state = "Contraction";
+    } else if (belief <= 65) {
+      phase = "First Quarter";
+      state = "Accumulation";
+    } else if (belief <= 85) {
+      phase = "Gibbous";
+      state = "Expansion";
+    } else {
+      phase = "Full Moon";
+      state = "Illumination";
+    }
+
+    const result = { belief, phase, state, updatedAt: Date.now() };
     await redis.set("belief:v2", result);
 
-    return NextResponse.json({
-      status: "updated",
-      result,
-    });
+    return NextResponse.json({ status: "updated", result });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to update belief" },
-      { status: 500 }
-    );
+    console.error("Failed to update belief:", error);
+    return NextResponse.json({ error: "Failed to update belief" }, { status: 500 });
   }
 }

@@ -1,5 +1,16 @@
+import { headers } from "next/headers";
+
 export default async function Home() {
-  const res = await fetch("/api/belief", {
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "";
+  if (!host) {
+    throw new Error("Missing host header");
+  }
+
+  const protocol =
+    process.env.NODE_ENV === "development" ? "http" : "https";
+
+  const res = await fetch(`${protocol}://${host}/api/belief`, {
     cache: "no-store",
   });
 

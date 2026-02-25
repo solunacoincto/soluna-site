@@ -109,28 +109,44 @@ export async function GET() {
 
     const finalBeliefRaw = parseFloat(Math.max(0, Math.min(100, belief)).toFixed(1));
 
-    // Redis smoothing
+    // Redis smoothing with rate limiting
     const dailyHistoryKey = 'belief:dailyHistory';
+    const lastUpdateKey = 'belief:lastUpdateTime';
     let yesterdayBelief = 50;
+    let lastUpdate = 0;
 
     try {
+      // Pobierz ostatni zapisany belief
       const history = await redis.lrange(dailyHistoryKey, -1, -1);
       if (history.length > 0) {
         const lastValue = parseFloat(history[0]);
         if (!isNaN(lastValue)) yesterdayBelief = lastValue;
       }
+
+      // Pobierz czas ostatniego smoothingu
+      const lastTimeStr = await redis.get(lastUpdateKey);
+      lastUpdate = Number(lastTimeStr) || 0;
     } catch (err) {
-      console.error('Error fetching belief history from Redis:', err);
+      console.error('Error fetching belief history or last update time from Redis:', err);
     }
 
-    const finalBelief = parseFloat((0.5 * yesterdayBelief + 0.5 * finalBeliefRaw).toFixed(1));
+    // aktualny timestamp
+    const now = Date.now();
 
-    // zapis do Redis
-    try {
-      await redis.rpush(dailyHistoryKey, finalBelief.toString());
-      await redis.ltrim(dailyHistoryKey, -30, -1);
-    } catch (err) {
-      console.error('Error saving belief to Redis:', err);
+    // jeśli minęło mniej niż 10 minut (600_000 ms), nie robimy smoothingu
+    let finalBelief: number;
+    if (now - lastUpdate < 10 * 60 * 1000) {
+      finalBelief = yesterdayBelief;
+    } else {
+      finalBelief = parseFloat((0.5 * yesterdayBelief + 0.5 * finalBeliefRaw).toFixed(1));
+      try {
+        // zapis do Redis
+        await redis.rpush(dailyHistoryKey, finalBelief.toString());
+        await redis.ltrim(dailyHistoryKey, -30, -1);
+        await redis.set(lastUpdateKey, now.toString());
+      } catch (err) {
+        console.error('Error saving belief or last update time to Redis:', err);
+      }
     }
 
     let phase = '';

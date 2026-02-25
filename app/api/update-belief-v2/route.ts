@@ -177,7 +177,8 @@ export async function GET() {
     }
 
     // finalBelief recalculated on every refresh
-    const finalBelief = smoothedBelief + (finalBeliefRaw - 50);
+    let finalBelief = smoothedBelief + (finalBeliefRaw - 50);
+    finalBelief = parseFloat(finalBelief.toFixed(1));
 
     let phase = '';
     let state = '';

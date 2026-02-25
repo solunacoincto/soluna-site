@@ -8,26 +8,55 @@ const redis = new Redis({
 });
 
 async function fetchSolanaData() {
-  try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/coins/solana?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false'
-    );
-    if (!res.ok) {
-      console.error(`Error fetching Solana data: HTTP status ${res.status}`);
-      return { priceChange7d: 0 };
-    }
-    let data: any;
+  const maxRetries = 3;
+  const retryDelay = 2000; // 2 seconds
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      data = await res.json();
-    } catch (jsonError) {
-      console.error('Error parsing Solana JSON:', jsonError);
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/coins/solana?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false'
+      );
+      if (res.status === 429) {
+        if (attempt === maxRetries) {
+          // Po 3 próbach błąd 429, zwróć ostatnią wartość z Redis lub 0
+          try {
+            const lastValueStr = await redis.get('belief:lastSolanaPriceChange7d');
+            const lastValue = (typeof lastValueStr === 'string' && !isNaN(parseFloat(lastValueStr))) ? parseFloat(lastValueStr) : 0;
+            return { priceChange7d: isNaN(lastValue) ? 0 : lastValue };
+          } catch (redisErr) {
+            console.error('Error fetching lastSolanaPriceChange7d from Redis:', redisErr);
+            return { priceChange7d: 0 };
+          }
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
+          continue;
+        }
+      }
+      if (!res.ok) {
+        console.error(`Error fetching Solana data: HTTP status ${res.status}`);
+        return { priceChange7d: 0 };
+      }
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        console.error('Error parsing Solana JSON:', jsonError);
+        return { priceChange7d: 0 };
+      }
+      const priceChange7d = data.market_data?.price_change_percentage_7d_in_currency?.usd ?? 0;
+      try {
+        await redis.set('belief:lastSolanaPriceChange7d', priceChange7d.toString(), { ex: 86400 });
+      } catch (redisErr) {
+        console.error('Error saving lastSolanaPriceChange7d to Redis:', redisErr);
+      }
+      return { priceChange7d };
+    } catch (error) {
+      console.error('Error fetching Solana data:', error);
       return { priceChange7d: 0 };
     }
-    return { priceChange7d: data.market_data?.price_change_percentage_7d_in_currency?.usd ?? 0 };
-  } catch (error) {
-    console.error('Error fetching Solana data:', error);
-    return { priceChange7d: 0 };
   }
+  // fallback, should not reach here
+  return { priceChange7d: 0 };
 }
 
 async function fetchDexData(address: string) {

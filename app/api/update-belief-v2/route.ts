@@ -162,21 +162,22 @@ export async function GET() {
     // aktualny timestamp
     const now = Date.now();
 
-    // jeśli minęło mniej niż 10 minut (600_000 ms), nie robimy smoothingu
-    let finalBelief: number;
-    if (now - lastUpdate < 10 * 60 * 1000) {
-      finalBelief = yesterdayBelief;
-    } else {
-      finalBelief = parseFloat((0.5 * yesterdayBelief + 0.5 * finalBeliefRaw).toFixed(1));
+    // smoothing rate-limited to 10 minutes
+    let smoothedBelief = yesterdayBelief;
+    if (now - lastUpdate >= 10 * 60 * 1000) {
+      smoothedBelief = parseFloat((0.5 * yesterdayBelief + 0.5 * finalBeliefRaw).toFixed(1));
       try {
         // zapis do Redis
-        await redis.rpush(dailyHistoryKey, finalBelief.toString());
+        await redis.rpush(dailyHistoryKey, smoothedBelief.toString());
         await redis.ltrim(dailyHistoryKey, -30, -1);
         await redis.set(lastUpdateKey, now.toString());
       } catch (err) {
         console.error('Error saving belief or last update time to Redis:', err);
       }
     }
+
+    // finalBelief recalculated on every refresh
+    const finalBelief = smoothedBelief + (finalBeliefRaw - 50);
 
     let phase = '';
     let state = '';

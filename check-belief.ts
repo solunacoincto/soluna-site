@@ -6,7 +6,7 @@ const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN ?? '';
 
 if (!redisUrl || !redisToken) {
   console.error('Missing UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN environment variables.');
-  process.exit(1);
+  // Do not exit the process
 }
 
 const redis = new Redis({

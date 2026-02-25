@@ -12,9 +12,20 @@ async function fetchSolanaData() {
     const res = await fetch(
       'https://api.coingecko.com/api/v3/coins/solana?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false'
     );
-    const data: any = await res.json();
+    if (!res.ok) {
+      console.error(`Error fetching Solana data: HTTP status ${res.status}`);
+      return { priceChange7d: 0 };
+    }
+    let data: any;
+    try {
+      data = await res.json();
+    } catch (jsonError) {
+      console.error('Error parsing Solana JSON:', jsonError);
+      return { priceChange7d: 0 };
+    }
     return { priceChange7d: data.market_data?.price_change_percentage_7d_in_currency?.usd ?? 0 };
-  } catch {
+  } catch (error) {
+    console.error('Error fetching Solana data:', error);
     return { priceChange7d: 0 };
   }
 }
@@ -22,10 +33,21 @@ async function fetchSolanaData() {
 async function fetchDexData(address: string) {
   try {
     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
-    const data: any = await res.json();
+    if (!res.ok) {
+      console.error(`Error fetching Dex data: HTTP status ${res.status}`);
+      return { h6Change: 0, token: null };
+    }
+    let data: any;
+    try {
+      data = await res.json();
+    } catch (jsonError) {
+      console.error('Error parsing Dex JSON:', jsonError);
+      return { h6Change: 0, token: null };
+    }
     const firstPair = data.pairs && data.pairs.length > 0 ? data.pairs[0] : null;
     return { h6Change: firstPair?.priceChange?.h6 ?? 0, token: firstPair };
-  } catch {
+  } catch (error) {
+    console.error('Error fetching Dex data:', error);
     return { h6Change: 0, token: null };
   }
 }
@@ -33,9 +55,20 @@ async function fetchDexData(address: string) {
 async function fetchRaydiumData() {
   try {
     const res = await fetch('https://api-v3.raydium.io/main/info');
-    const data: any = await res.json();
+    if (!res.ok) {
+      console.error(`Error fetching Raydium data: HTTP status ${res.status}`);
+      return { tvl: 0, volume24: 0 };
+    }
+    let data: any;
+    try {
+      data = await res.json();
+    } catch (jsonError) {
+      console.error('Error parsing Raydium JSON:', jsonError);
+      return { tvl: 0, volume24: 0 };
+    }
     return { tvl: data.data?.tvl ?? 0, volume24: data.data?.volume24 ?? 0 };
-  } catch {
+  } catch (error) {
+    console.error('Error fetching Raydium data:', error);
     return { tvl: 0, volume24: 0 };
   }
 }

@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/update-belief",
+      "path": "/api/daily-belief-post",
       "schedule": "0 0 * * *"
     }
   ]

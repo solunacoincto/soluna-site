@@ -81,24 +81,75 @@ async function fetchDexData(address: string) {
   }
 }
 
-async function fetchRaydiumData() {
+async function fetchSolanaTvlData() {
   try {
-    const res = await fetch('https://api-v3.raydium.io/main/info');
+    const res = await fetch('https://api.llama.fi/v2/historicalChainTvl/Solana');
     if (!res.ok) {
-      console.error(`Error fetching Raydium data: HTTP status ${res.status}`);
-      return { tvl: 0, volume24: 0 };
+      console.error(`Error fetching Solana TVL data: HTTP status ${res.status}`);
+      return { tvlYesterday: 0, tvl7dBase: 0 };
     }
-    let data: any;
-    try {
-      data = await res.json();
-    } catch (jsonError) {
-      console.error('Error parsing Raydium JSON:', jsonError);
-      return { tvl: 0, volume24: 0 };
+
+    const data: any[] = await res.json();
+
+    if (!Array.isArray(data) || data.length < 8) {
+      return { tvlYesterday: 0, tvl7dBase: 0 };
     }
-    return { tvl: data.data?.tvl ?? 0, volume24: data.data?.volume24 ?? 0 };
+
+    // sort by date ascending just in case
+    const sorted = data.sort((a, b) => a.date - b.date);
+
+    const lastIndex = sorted.length - 1;
+
+    // yesterday = previous full day
+    const tvlYesterday = sorted[lastIndex - 1]?.tvl ?? 0;
+
+    // last 7 full days average (excluding today)
+    const last7 = sorted.slice(lastIndex - 7, lastIndex);
+    const tvl7dBase =
+      last7.reduce((sum, item) => sum + (item.tvl ?? 0), 0) / last7.length;
+
+    return { tvlYesterday, tvl7dBase };
   } catch (error) {
-    console.error('Error fetching Raydium data:', error);
-    return { tvl: 0, volume24: 0 };
+    console.error('Error fetching Solana TVL data:', error);
+    return { tvlYesterday: 0, tvl7dBase: 0 };
+  }
+}
+
+async function fetchSolanaDexVolumeData() {
+  try {
+    const res = await fetch(
+      'https://api.llama.fi/overview/dexs/Solana?excludeTotalDataChart=false&excludeTotalDataChartBreakdown=true'
+    );
+    if (!res.ok) {
+      console.error(`Error fetching Solana DEX volume data: HTTP status ${res.status}`);
+      return { volumeYesterday: 0, volume7dBase: 0 };
+    }
+
+    const data: any = await res.json();
+
+    const dailyData = data?.totalDataChart;
+
+    if (!Array.isArray(dailyData) || dailyData.length < 8) {
+      return { volumeYesterday: 0, volume7dBase: 0 };
+    }
+
+    // sort by timestamp ascending
+    const sorted = dailyData.sort((a, b) => a[0] - b[0]);
+
+    const lastIndex = sorted.length - 1;
+
+    // yesterday = previous full day
+    const volumeYesterday = sorted[lastIndex - 1]?.[1] ?? 0;
+
+    // last 7 full days average (excluding today)
+    const last7 = sorted.slice(lastIndex - 7, lastIndex);
+    const volume7dBase =
+      last7.reduce((sum, item) => sum + (item[1] ?? 0), 0) / last7.length;
+
+    return { volumeYesterday, volume7dBase };
+  } catch (error) {
+    console.error('Error fetching Solana DEX volume data:', error);
+    return { volumeYesterday: 0, volume7dBase: 0 };
   }
 }
 
@@ -106,33 +157,50 @@ export async function GET() {
   try {
     const solanaData = await fetchSolanaData();
     const dexData = await fetchDexData(tokenAddress);
-    const raydiumData = await fetchRaydiumData();
-
-    const tvlBase = 1377004559.162567;
-    const volumeBase = 318668084.57249504;
-
-    const normalizedTvl = raydiumData.tvl / tvlBase;
-    const normalizedVolume = raydiumData.volume24 / volumeBase;
+    const solanaTvlData = await fetchSolanaTvlData();
+    const solanaVolumeData = await fetchSolanaDexVolumeData();
 
     console.log('--- belief debug ---');
     console.log('priceChange7d:', solanaData.priceChange7d);
     console.log('h6Change:', dexData.h6Change);
-    console.log('normalizedTvl:', normalizedTvl);
-    console.log('normalizedVolume:', normalizedVolume);
 
     // komponenty belief
     const priceChange7dComponent = 0.4 * solanaData.priceChange7d;
     const h6ChangeComponent = 0.2 * dexData.h6Change;
-    const volumeComponent = 0.025 * normalizedVolume * 5;
-    const tvlComponent = 0.025 * normalizedTvl * 5;
+
+    const tvlDifference =
+      solanaTvlData.tvl7dBase > 0
+        ? ((solanaTvlData.tvlYesterday - solanaTvlData.tvl7dBase) /
+            solanaTvlData.tvl7dBase) *
+          100
+        : 0;
+
+    const tvlComponent = 0.2 * tvlDifference;
 
     console.log('priceChange7dComponent:', priceChange7dComponent);
     console.log('h6ChangeComponent:', h6ChangeComponent);
-    console.log('volumeComponent (5x):', volumeComponent);
-    console.log('tvlComponent (5x):', tvlComponent);
+    console.log('tvlDifference %:', tvlDifference);
+    console.log('tvlComponent:', tvlComponent);
 
-    // suma komponentów mnożona x10 przed dodaniem bazowego 50
-    const componentSum = (priceChange7dComponent + h6ChangeComponent + volumeComponent + tvlComponent) * 5;
+    console.log('volumeDifference %:', solanaVolumeData.volume7dBase > 0
+      ? ((solanaVolumeData.volumeYesterday - solanaVolumeData.volume7dBase) /
+          solanaVolumeData.volume7dBase) *
+        100
+      : 0);
+    const volumeDifference =
+      solanaVolumeData.volume7dBase > 0
+        ? ((solanaVolumeData.volumeYesterday - solanaVolumeData.volume7dBase) /
+            solanaVolumeData.volume7dBase) *
+          100
+        : 0;
+
+    const volumeComponent = 0.07 * volumeDifference;
+
+    console.log('volumeComponent:', volumeComponent);
+
+    // suma komponentów mnożona x3.5 przed dodaniem bazowego 50
+    const componentSum =
+      (priceChange7dComponent + h6ChangeComponent + tvlComponent + volumeComponent) * 3.5;
 
     const belief = 50 + componentSum;
 
@@ -177,7 +245,7 @@ export async function GET() {
     }
 
     // finalBelief recalculated on every refresh
-    let finalBelief = smoothedBelief + (finalBeliefRaw - 50);
+    let finalBelief = smoothedBelief;
     finalBelief = parseFloat(finalBelief.toFixed(1));
 
     let phase = '';
@@ -205,7 +273,8 @@ export async function GET() {
         updatedAt: Date.now(),
         solanaData,
         dexData,
-        raydiumData,
+        solanaTvlData,
+        solanaVolumeData,
       },
     });
   } catch (error) {

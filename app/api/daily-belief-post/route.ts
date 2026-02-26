@@ -40,7 +40,7 @@ Automatically generated at ${currentTimeUTC}`;
     const rwClient = twitterClient.readWrite;
 
     // 5️⃣ Post to X or log in dev
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' || process.env.TEST_TWEET === 'true') {
       try {
         await rwClient.v2.tweet(postContent);
         console.log('Daily belief posted to X:', postContent);

@@ -1,14 +1,13 @@
 import { kv } from '@vercel/kv';
 import TwitterApi from 'twitter-api-v2';
 import { NextResponse } from 'next/server';
+import { calculateBelief } from '@/lib/calculateBelief';
 
 export async function GET() {
   try {
-    // 1️⃣ Trigger belief calculation
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const beliefResponse = await fetch(`${baseUrl}/api/update-belief-v2`);
-    const beliefData = await beliefResponse.json();
-    const finalBelief = beliefData.result.belief;
+    // 1️⃣ Direct belief calculation (no self-fetch)
+    const beliefData = await calculateBelief();
+    const finalBelief = beliefData.belief;
 
     // 2️⃣ Save daily close belief to KV
     const dailyCloseKey = 'belief:dailyClose';
@@ -25,7 +24,7 @@ export async function GET() {
 `Belief Index — Daily Close
 ${finalBelief}
 
-Current Phase: ${beliefData.result.phase}
+Current Phase: ${beliefData.phase}
 
 Automatically generated at ${currentTimeUTC}`;
 

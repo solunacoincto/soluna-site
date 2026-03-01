@@ -103,7 +103,7 @@ export async function calculateBelief() {
   const solanaVolumeData = await fetchSolanaDexVolumeData();
 
   const priceChange7dComponent = 0.4 * solanaData.priceChange7d;
-  const h6ChangeComponent = 0.2 * dexData.h6Change;
+  const h6ChangeComponent = 0.3 * dexData.h6Change;
 
   const tvlDifference =
     solanaTvlData.tvl7dBase > 0

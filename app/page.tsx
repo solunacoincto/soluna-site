@@ -110,6 +110,15 @@ export default async function Home() {
           </a>
         </section>
 
+        <section className="mt-4">
+          <a
+            href="/belief-system"
+            className="text-lg text-white/60 hover:text-white transition tracking-wide"
+          >
+            Enter the Belief System →
+          </a>
+        </section>
+
       </div>
     </main>
   );

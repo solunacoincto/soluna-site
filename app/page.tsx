@@ -76,6 +76,14 @@ export default async function Home() {
           <p>
             Every ecosystem eventually reveals its own emotional cycle.
           </p>
+            <section className="mt-4">
+            <a
+              href="/belief-system"
+              className="text-lg text-white hover:text-white transition tracking-wide"
+            >
+            Enter the Belief System →
+            </a>
+          </section>
         </section>
 
         {/* PHASES */}
@@ -104,20 +112,12 @@ export default async function Home() {
         <section className="mt-6">
           <a
             href="/chronicle"
-            className="text-lg text-white/60 hover:text-white transition tracking-wide"
+            className="text-lg text-white hover:text-white transition tracking-wide"
           >
             Enter the Chronicle →
           </a>
         </section>
 
-        <section className="mt-4">
-          <a
-            href="/belief-system"
-            className="text-lg text-white/60 hover:text-white transition tracking-wide"
-          >
-            Enter the Belief System →
-          </a>
-        </section>
 
       </div>
     </main>

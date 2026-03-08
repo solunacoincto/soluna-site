@@ -34,24 +34,37 @@ export default function BeliefSystemPage() {
               <tr>
                 <td className="border border-white/20 px-4 py-2">Full Moon</td>
                 <td className="border border-white/20 px-4 py-2">Any</td>
-                <td className="border border-white/20 px-4 py-2">Buyback 0.1% + Lock all strategic wallet reserves for 365 days</td>
+                <td className="border border-white/20 px-4 py-2">
+                  Lock all Strategic Treasury reserves for 365 days
+                </td>
               </tr>
               <tr>
                 <td className="border border-white/20 px-4 py-2">First / Third Quarter</td>
+                <td className="border border-white/20 px-4 py-2">Any</td>
+                <td className="border border-white/20 px-4 py-2">
+                  Buyback 0.2% of supply → 0.1% Burn + 0.1% Strategic Treasury Reserve
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-white/20 px-4 py-2">Any Day</td>
                 <td className="border border-white/20 px-4 py-2">Belief &lt; 25</td>
-                <td className="border border-white/20 px-4 py-2">Buyback 0.2% of supply → 0.1% Burn + 0.1% Strategic Wallet Reserve</td>
+                <td className="border border-white/20 px-4 py-2">
+                  Buyback 0.1% of supply → Strategic Treasury Reserve (max once per 24 hours)
+                </td>
               </tr>
               <tr>
                 <td className="border border-white/20 px-4 py-2">Any Day</td>
                 <td className="border border-white/20 px-4 py-2">Belief &gt; 75</td>
-                <td className="border border-white/20 px-4 py-2">Deploy boost based on wallet fees (once per 24 hours)</td>
+                <td className="border border-white/20 px-4 py-2">
+                  Deploy Dexscreener boost using wallet fees (max once per 24 hours)
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <p className="text-white/30 mb-12 leading-relaxed">
-          Note: Buyback and burn actions are proportionally allocated according to the Belief Index and phase mechanics. Boosts are automatically deployed, limited to once every 24 hours, depending on available wallet fees.
+          Strategic Treasury reserves accumulate through structural buybacks during First and Third Quarter phases and opportunistic accumulation when Belief falls below 25. All accumulated reserves are locked for 365 days during each Full Moon. Belief-triggered actions are limited to one execution per 24 hours.
         </p>
       </div>
     </main>

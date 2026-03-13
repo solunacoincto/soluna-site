@@ -22,20 +22,29 @@ export default async function Home() {
 
   const pulseData = await pulseRes.json();
 
+  function getIndexState(belief: number) {
+    if (belief < 25) return "Capitulation";
+    if (belief < 50) return "Accumulation";
+    if (belief < 75) return "Expansion";
+    return "Euphoria";
+  }
+
+  const indexState = getIndexState(beliefData.result.belief);
+
   const auraMap: Record<string, string> = {
-    "New Moon": "bg-blue-500/10",
-    "Accumulation": "bg-blue-500/10",
-    "Expansion": "bg-emerald-500/10",
-    "Mania": "bg-amber-500/10",
-    "Capitulation": "bg-red-500/10",
-    "Waning": "bg-slate-400/10",
+    "New Moon": "bg-blue-500/6",
+    "First Quarter": "bg-emerald-500/6",
+    "Full Moon": "bg-amber-500/6",
+    "Third Quarter": "bg-slate-400/6",
   };
 
   const auraClass = auraMap[beliefData.result.phase] || "bg-white/5";
 
   return (
     <main className="relative bg-black text-white min-h-[90vh] px-6 py-10 overflow-hidden">
-      <div className={`absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] ${auraClass} rounded-full blur-3xl pointer-events-none transition-colors duration-700`} />
+      <div
+        className={`absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[900px] ${auraClass} rounded-full blur-3xl pointer-events-none transition-colors duration-700`}
+      />
 
       <div className="max-w-2xl mx-auto">
 
@@ -61,7 +70,7 @@ export default async function Home() {
               </p>
 
               <p className="text-white/40 text-sm tracking-wide">
-                Belief {beliefData.result.belief} · {beliefData.result.state}
+                Belief {beliefData.result.belief} · {indexState}
               </p>
             </div>
 
@@ -69,6 +78,7 @@ export default async function Home() {
               <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
                 Soluna Momentum
               </p>
+
               <p className="text-3xl font-semibold text-white tracking-[-0.01em]">
                 {pulseData.state}
               </p>
@@ -82,27 +92,20 @@ export default async function Home() {
 
         {/* REFLECTION */}
         <section className="mb-12 space-y-6 text-[19px] leading-[1.75] text-white/70">
-          <p>
-            This is the current reflection of Solana.
-          </p>
+          <p>This is the current reflection of Solana.</p>
 
-          <p>
-            Solana is speed. Solana is chaos. Solana is trenches.
-          </p>
+          <p>Solana is speed. Solana is chaos. Solana is trenches.</p>
 
-          <p>
-            It expands. It contracts. It survives.
-          </p>
+          <p>It expands. It contracts. It survives.</p>
 
-          <p>
-            Every ecosystem eventually reveals its own emotional cycle.
-          </p>
-            <section className="mt-4">
+          <p>Every ecosystem eventually reveals its own emotional cycle.</p>
+
+          <section className="mt-4">
             <a
               href="/soluna-system"
               className="text-lg text-white hover:text-white transition tracking-wide"
             >
-            Enter the Soluna System →
+              Enter the Soluna System →
             </a>
           </section>
         </section>
@@ -113,21 +116,13 @@ export default async function Home() {
             Phases
           </h2>
 
-          <p>
-            Markets move in cycles.
-          </p>
+          <p>Markets move in cycles.</p>
 
-          <p>
-            Structure determines outcome. Narrative explains it later.
-          </p>
+          <p>Structure determines outcome. Narrative explains it later.</p>
 
-          <p>
-            Accumulation. Expansion. Mania. Capitulation.
-          </p>
+          <p>Accumulation. Expansion. Mania. Capitulation.</p>
 
-          <p>
-            The moon does not shine. It reflects.
-          </p>
+          <p>The moon does not shine. It reflects.</p>
         </section>
 
         <section className="mt-6">
@@ -138,7 +133,6 @@ export default async function Home() {
             Enter the Chronicle →
           </a>
         </section>
-
 
       </div>
     </main>

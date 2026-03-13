@@ -16,6 +16,12 @@ export default async function Home() {
 
   const beliefData = await res.json();
 
+  const pulseRes = await fetch(`${protocol}://${host}/api/update-pulse`, {
+    cache: "no-store",
+  });
+
+  const pulseData = await pulseRes.json();
+
   const auraMap: Record<string, string> = {
     "New Moon": "bg-blue-500/10",
     "Accumulation": "bg-blue-500/10",
@@ -44,18 +50,33 @@ export default async function Home() {
           </p>
 
           {/* CURRENT PHASE */}
-          <div className="mt-12 space-y-2">
-            <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
-              Current Phase
-            </p>
+          <div className="mt-12 flex items-start gap-16">
+            <div className="space-y-2">
+              <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
+                Memecoin Phase
+              </p>
 
-            <p className="text-3xl font-semibold text-white tracking-[-0.01em]">
-              {beliefData.result.phase}
-            </p>
+              <p className="text-3xl font-semibold text-white tracking-[-0.01em]">
+                {beliefData.result.phase}
+              </p>
 
-            <p className="text-white/40 text-sm tracking-wide">
-              Belief {beliefData.result.belief} · {beliefData.result.state}
-            </p>
+              <p className="text-white/40 text-sm tracking-wide">
+                Belief {beliefData.result.belief} · {beliefData.result.state}
+              </p>
+            </div>
+
+            <div className="space-y-2 min-w-[200px]">
+              <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
+                Soluna Momentum
+              </p>
+              <p className="text-3xl font-semibold text-white tracking-[-0.01em]">
+                {pulseData.state}
+              </p>
+
+              <p className="text-white/40 text-sm tracking-wide">
+                Pulse {pulseData.pulse}
+              </p>
+            </div>
           </div>
         </section>
 
@@ -78,10 +99,10 @@ export default async function Home() {
           </p>
             <section className="mt-4">
             <a
-              href="/belief-system"
+              href="/soluna-system"
               className="text-lg text-white hover:text-white transition tracking-wide"
             >
-            Enter the Belief System →
+            Enter the Soluna System →
             </a>
           </section>
         </section>

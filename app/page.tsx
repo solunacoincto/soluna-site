@@ -32,10 +32,10 @@ export default async function Home() {
   const indexState = getIndexState(beliefData.result.belief);
 
   const auraMap: Record<string, string> = {
-    "New Moon": "bg-blue-500/6",
-    "First Quarter": "bg-emerald-500/6",
-    "Full Moon": "bg-amber-500/6",
-    "Third Quarter": "bg-slate-400/6",
+    "New Moon": "bg-blue-500/5",
+    "First Quarter": "bg-emerald-500/5",
+    "Full Moon": "bg-amber-500/5",
+    "Third Quarter": "bg-slate-400/5",
   };
 
   const auraClass = auraMap[beliefData.result.phase] || "bg-white/5";

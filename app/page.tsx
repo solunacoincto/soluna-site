@@ -59,7 +59,7 @@ export default async function Home() {
           </p>
 
           {/* CURRENT PHASE */}
-          <div className="mt-12 flex items-start gap-16">
+          <div className="mt-12 flex flex-col sm:flex-row items-start gap-10 sm:gap-16">
             <div className="space-y-2">
               <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
                 Memecoin Phase
@@ -74,7 +74,7 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="space-y-2 min-w-[200px]">
+            <div className="space-y-2 sm:min-w-[200px]">
               <p className="text-xs text-white/30 tracking-[0.2em] uppercase">
                 Soluna Momentum
               </p>
